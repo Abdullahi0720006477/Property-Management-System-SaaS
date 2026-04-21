@@ -1,0 +1,7 @@
+{
+    "name": "bizconnect/property-management",
+    "description": "Property Management System",
+    "require": {
+        "phpmailer/phpmailer": "^7.0"
+    }
+}

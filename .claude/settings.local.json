@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/laragon/www/propertyManagement/views -type f -name \"*.php\" -exec wc -l {} +)",
+      "Bash(composer --version)",
+      "Read(//c/laragon/bin/**)",
+      "Read(//c/laragon/bin/composer/**)",
+      "Read(//c/laragon/**)",
+      "Bash(/c/laragon/bin/composer/composer.bat init *)",
+      "Bash(/c/laragon/bin/composer/composer.bat require *)",
+      "Bash(/c/laragon/bin/php/php-8.3.16-Win32-vs16-x64/php.exe /c/laragon/bin/composer/composer.phar init --no-interaction --name=\"bizconnect/property-management\" --description=\"Property Management System\")",
+      "Bash(/c/laragon/bin/php/php-8.3.16-Win32-vs16-x64/php.exe /c/laragon/bin/composer/composer.phar require phpmailer/phpmailer)",
+      "Bash(/c/laragon/bin/php/php-8.3.16-Win32-vs16-x64/php.exe database/migrate_autopay.php)",
+      "Bash(/c/laragon/bin/php/php-8.3.16-Win32-vs16-x64/php.exe cron/mark_overdue.php)",
+      "Bash(/c/laragon/bin/php/php-8.3.16-Win32-vs16-x64/php.exe cron/auto_generate_rent.php)",
+      "Bash(xargs grep *)"
+    ]
+  }
+}

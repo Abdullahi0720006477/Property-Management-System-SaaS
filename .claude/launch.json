@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "PHP Built-in Server (Property Management)",
+      "runtimeExecutable": "C:/laragon/bin/php/php-8.3.16-Win32-vs16-x64/php.exe",
+      "runtimeArgs": ["-S", "localhost:8080", "-t", "public"],
+      "port": 8080
+    }
+  ]
+}

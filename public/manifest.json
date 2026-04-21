@@ -1,0 +1,9 @@
+{
+    "name": "Property Management System",
+    "short_name": "PropMS",
+    "start_url": "?page=dashboard",
+    "display": "standalone",
+    "background_color": "#1B2A4A",
+    "theme_color": "#1B2A4A",
+    "icons": []
+}
