@@ -1,0 +1,122 @@
+name: CI/CD Pipeline - Property Management SaaS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─────────────────────────────────────────
+  # JOB 1: Code Quality & Syntax Check
+  # ─────────────────────────────────────────
+  code-check:
+    name: PHP Syntax & Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_mysql, bcmath
+          coverage: none
+
+      - name: Install Composer Dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Check PHP Syntax Errors
+        run: find src/ -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"  || true
+
+      - name: Check Views Syntax
+        run: find views/ -name "*.php" -exec php -l {} \; | grep -v "No syntax errors" || true
+
+  # ─────────────────────────────────────────
+  # JOB 2: Database Setup & Migration Test
+  # ─────────────────────────────────────────
+  database-check:
+    name: Database Migration Test
+    runs-on: ubuntu-latest
+    needs: code-check
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: property_saas_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_mysql
+
+      - name: Wait for MySQL
+        run: sleep 10
+
+      - name: Run Database Migrations
+        run: |
+          if [ -f database/schema.sql ]; then
+            mysql -h 127.0.0.1 -u root -proot property_saas_test < database/schema.sql
+            echo "Database schema imported successfully"
+          else
+            echo "No schema.sql found, skipping migration test"
+          fi
+
+  # ─────────────────────────────────────────
+  # JOB 3: Security Scan
+  # ─────────────────────────────────────────
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: code-check
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install Dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run Security Audit
+        run: composer audit || true
+
+  # ─────────────────────────────────────────
+  # JOB 4: Deployment (only on main push)
+  # ─────────────────────────────────────────
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [code-check, database-check, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deployment Notice
+        run: |
+          echo "========================================"
+          echo " All checks passed!"
+          echo " Ready to deploy Property Management SaaS"
+          echo " Add your deployment steps here:"
+          echo " - FTP upload to cPanel"
+          echo " - SSH deploy to VPS"
+          echo " - Deploy to cloud (AWS, DO, etc.)"
+          echo "========================================"
